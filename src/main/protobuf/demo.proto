@@ -19,3 +19,7 @@ message Person {
     repeated string tags = 4;
     repeated Address addresses = 5;
 }
+
+message PersonList {
+    repeated Person people = 1;
+}
