@@ -21,5 +21,6 @@ message Person {
 }
 
 message PersonList {
-    repeated Person people = 1;
+    optional string tags = 1;
+    repeated Person people = 2;
 }
