@@ -99,28 +99,27 @@ object RunDemo {
         .getOrCreate()
     }
     
+    // declare message contents
+    val newPerson = for (i <- 1 to 5) yield {
+      Person(
+        name = Some("Joe"),
+        age = Some(30 + i),
+        gender = if (i%2==0) Some(Gender.MALE) else Some(Gender.FEMALE),
+        addresses = Vector(
+          Address(city = Some("San Francisco"), street = Some(s"No.$i"))
+        )
+      )
+    }
+
     def addPerson(path: String): Unit = {
       
       val spark = initSpark()
-
-      // declare message contents
-      val newPerson = for (i <- 1 to 5) yield {
-        Person(
-          name = Some("Joe"),
-          age = Some(30 + i),
-          gender = if (i%2==0) Some(Gender.MALE) else Some(Gender.FEMALE),
-          addresses = Vector(
-            Address(city = Some("San Francisco"), street = Some(s"No.$i"))
-          )
-        )
-      }
 
       val personsDF: DataFrame = ProtoSQL.createDataFrame(spark, newPerson)
       val personsDS: Dataset[Person] = personsDF.as[Person]
       
       personsDS.foreach { person =>
-        val file = new FileOutputStream(path)
-        println(person.age.getOrElse(-1))
+        val file = new FileOutputStream(path + person.age.getOrElse(0).toString + "_tmp_person.pb")
         try {
           person.writeTo(file)
         } finally {
@@ -132,18 +131,6 @@ object RunDemo {
     def addPeople(path: String): Unit = {
       
       val spark = initSpark()
-      
-      // declare message contents
-      val newPerson = for (i <- 1 to 5) yield {
-        Person(
-          name = Some("Joe"),
-          age = Some(30 + i),
-          gender = if (i%2==0) Some(Gender.MALE) else Some(Gender.FEMALE),
-          addresses = Vector(
-            Address(city = Some("San Francisco"), street = Some(s"No.$i"))
-          )
-        )
-      }
       
       // create dataframe from vector
       val peopleDF: DataFrame = ProtoSQL.createDataFrame(spark, Vector(PersonList(newPerson)))
@@ -163,7 +150,7 @@ object RunDemo {
     }
 
     // addPeople("data/tmp2.pb")
-    addPerson("data/tmp_person.pb")
+    addPerson("data/")
   
   }
 }
