@@ -16,7 +16,7 @@ import scalapb.spark.ProtoSQL
 import org.apache.log4j.Logger
 import org.apache.log4j.Level
 
-import java.io.FileOutputStream
+import java.io.{FileInputStream, FileOutputStream}
 
 object RunDemo {
 
@@ -30,6 +30,41 @@ object RunDemo {
         .appName("ScalaPB Demo")
         .master("local[2]")
         .getOrCreate()
+    }
+    
+    // declare message contents
+    val newPerson = for (i <- 1 to 5) yield {
+      Person(
+        name = Some("Joe"),
+        age = Some(30 + i),
+        gender = if (i%2==0) Some(Gender.MALE) else Some(Gender.FEMALE),
+        addresses = Vector(
+          Address(city = Some("San Francisco"), street = Some(s"No.$i"))
+        )
+      )
+    }
+    
+    /**
+     * decode protocol buffers binary file and create dataframe
+     */
+    def readFromFile(path: String): Unit = {
+      
+      val spark = initSpark()
+
+      val fileInputStream = new FileInputStream(path)
+      
+      try {
+        val personList = PersonList.parseFrom(fileInputStream)
+        println(personList.toProtoString)
+        
+        val peopleDF: DataFrame = ProtoSQL.createDataFrame(spark, Seq(personList))
+        peopleDF.printSchema()
+        peopleDF.show()
+        
+      } finally {
+        fileInputStream.close()
+      }
+
     }
     
     def addPerson(path: String): Unit = {
@@ -77,20 +112,9 @@ object RunDemo {
       }
     }
 
-    // declare message contents
-    val newPerson = for (i <- 1 to 5) yield {
-      Person(
-        name = Some("Joe"),
-        age = Some(30 + i),
-        gender = if (i%2==0) Some(Gender.MALE) else Some(Gender.FEMALE),
-        addresses = Vector(
-          Address(city = Some("San Francisco"), street = Some(s"No.$i"))
-        )
-      )
-    }
-    
-    addPeople("data/")
+    // addPeople("data/")
     // addPerson("data/")
+    readFromFile("data/1_tmp_people.pb")
   
   }
 }
