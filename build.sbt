@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
     "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
     "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-streaming-kafka-0-10" % sparkVersion,
     "com.thesamet.scalapb" %% "sparksql-scalapb" % "0.11.0-RC1"
 )
 
@@ -18,7 +19,7 @@ libraryDependencies ++= Seq(
 
 assemblyJarName := s"${name.value}-${version.value}.jar"
 
-mainClass in assembly := Some("example.spark_streaming.AppMain")
+mainClass in assembly := Some("example.spark_streaming_kafka.AppMain")
 
 test in assembly := {}
 
