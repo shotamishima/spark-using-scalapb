@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
 
 assemblyJarName := s"${name.value}-${version.value}.jar"
 
-mainClass in assembly := Some("example.structured_streaming.RunDemo")
+mainClass in assembly := Some("example.spark_streaming.AppMain")
 
 test in assembly := {}
 
