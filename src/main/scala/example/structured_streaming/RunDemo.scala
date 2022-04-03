@@ -1,4 +1,4 @@
-package myexample
+package example.structured_streaming
 
 import com.example.protos.demo._
 
@@ -114,7 +114,7 @@ object RunDemo {
 
     // addPeople("data/")
     // addPerson("data/")
-    readFromFile("data/1_tmp_people.pb")
+    readFromFile("data/31_tmp_person.pb")
   
   }
 }
